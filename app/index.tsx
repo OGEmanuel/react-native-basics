@@ -1,84 +1,64 @@
-import StartGameScreen from "@/screens/start-game-screen";
-import { ImageBackground, SafeAreaView, StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
-import GameScreen from "@/screens/game-screen";
-import Colors from "@/constants/colors";
-import GameOverScreen from "@/screens/game-over-screen";
-import { useFonts } from "expo-font";
-import AppLoading from "expo-app-loading";
-import { StatusBar } from "expo-status-bar";
+import { Button, StyleSheet, Text } from "react-native";
+import CategoriesScreen from "@/screens/categories-screen";
+import * as SystemUI from "expo-system-ui";
+// import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MealsOverviewScreen from "@/screens/meals-overview-screen";
+import MealDetailsScreen from "@/screens/meal-details-screen";
+
+const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const [userNumber, setUserNumber] = useState<null | number>(null);
-  const [gameIsOver, setGameIsOver] = useState(true);
-  const [guessRounds, setGuessRounds] = useState(0);
-
-  const [fontsLoaded] = useFonts({
-    "open-sans": require("@/assets/fonts/OpenSans-Regular.ttf"),
-    "open-sans-bold": require("@/assets/fonts/OpenSans-Bold.ttf"),
-  });
-
-  if (!fontsLoaded) {
-    return <AppLoading />;
-  }
-
-  const pickedNumberHandler = (pickedNumber: number) => {
-    setUserNumber(pickedNumber);
-    setGameIsOver(false);
-  };
-  const gameOverHandler = (numberOfRounds: number) => {
-    setGameIsOver(true);
-    setGuessRounds(numberOfRounds);
-  };
-  const startNewGameHandler = () => {
-    setUserNumber(null);
-    setGuessRounds(0);
-  };
-
-  let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;
-
-  if (userNumber)
-    screen = (
-      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
-    );
-
-  if (gameIsOver && userNumber)
-    screen = (
-      <GameOverScreen
-        userNumber={userNumber}
-        roundsNumber={guessRounds}
-        onStartNewGame={startNewGameHandler}
-      />
-    );
+  SystemUI.setBackgroundColorAsync("#24180f");
 
   return (
+    // <NavigationContainer>
     <>
-      <StatusBar style="dark" />
-      <LinearGradient
-        colors={[Colors.primary700, Colors.accent500]}
-        style={styles.rootScreen}
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#351401",
+          },
+          headerTintColor: "white",
+          contentStyle: {
+            backgroundColor: "#3f2f25",
+          },
+        }}
       >
-        <ImageBackground
-          source={require("@/assets/images/background.png")}
-          resizeMode="cover"
-          style={styles.rootScreen}
-          imageStyle={styles.backgroundImage}
-        >
-          <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
-        </ImageBackground>
-      </LinearGradient>
+        <Stack.Screen
+          name="MealsCategories"
+          component={CategoriesScreen}
+          options={{
+            title: "All Categories",
+          }}
+        />
+        <Stack.Screen
+          name="MealsOverview"
+          component={MealsOverviewScreen}
+          // options={({ route, navigation }) => {
+          //   const catId = route?.params?.categoryId;
+          //   return {
+          //     title: catId,
+          //   };
+          // }}
+        />
+        <Stack.Screen
+          name="MealDetail"
+          component={MealDetailsScreen}
+          // options={{
+          //   headerRight: () => {
+          //     return <Button title="Tap me!" />;
+          //   },
+          // }}
+        />
+      </Stack.Navigator>
     </>
+    // </NavigationContainer>
   );
 };
 
 export default App;
 
 const styles = StyleSheet.create({
-  rootScreen: {
-    flex: 1,
-  },
-  backgroundImage: {
-    opacity: 0.15,
-  },
+  container: {},
 });
